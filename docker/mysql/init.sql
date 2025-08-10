@@ -39,7 +39,7 @@ CREATE TABLE sys_dept (
 DROP TABLE IF EXISTS sys_user;
 CREATE TABLE sys_user (
     user_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
-    username VARCHAR(50) UNIQUE NOT NULL COMMENT '用户名',
+    user_name VARCHAR(50) UNIQUE NOT NULL COMMENT '用户名',
     password VARCHAR(100) NOT NULL COMMENT '密码',
     nickname VARCHAR(50) COMMENT '昵称',
     real_name VARCHAR(50) COMMENT '真实姓名',
@@ -220,7 +220,7 @@ DROP TABLE IF EXISTS patient_info;
 CREATE TABLE patient_info (
     patient_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '患者ID',
     patient_code VARCHAR(20) UNIQUE NOT NULL COMMENT '患者编号',
-    name VARCHAR(50) NOT NULL COMMENT '姓名',
+    full_name VARCHAR(50) NOT NULL COMMENT '姓名',
     gender TINYINT DEFAULT 0 COMMENT '性别：0未知，1男，2女',
     birth_date DATE COMMENT '出生日期',
     age INT COMMENT '年龄',
@@ -273,13 +273,22 @@ CREATE TABLE exam_record (
     exam_time TIME COMMENT '检查时间',
     status TINYINT DEFAULT 1 COMMENT '状态：1待检查，2检查中，3已完成，4已取消',
     total_amount DECIMAL(10,2) DEFAULT 0.00 COMMENT '总金额',
+    -- 以下为报告相关合并字段
+    report_no VARCHAR(50) COMMENT '报告编号',
+    report_title VARCHAR(200) COMMENT '报告标题',
+    report_content TEXT COMMENT '报告内容',
+    conclusion TEXT COMMENT '检查结论',
+    suggestion TEXT COMMENT '建议',
+    report_doctor VARCHAR(100) COMMENT '报告医生',
+    report_date DATE COMMENT '报告日期',
+    report_status TINYINT DEFAULT 1 COMMENT '报告状态：1草稿，2已发布',
     del_flag TINYINT DEFAULT 0 COMMENT '删除标志：0存在，1删除',
     create_by VARCHAR(50) COMMENT '创建者',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_by VARCHAR(50) COMMENT '更新者',
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     remark VARCHAR(500) COMMENT '备注'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='检查记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='检查记录表(含报告)';
 
 -- 检查记录项目明细表
 DROP TABLE IF EXISTS exam_record_item;
@@ -301,25 +310,8 @@ CREATE TABLE exam_record_item (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='检查记录项目明细表';
 
 -- 检查报告表
-DROP TABLE IF EXISTS exam_report;
-CREATE TABLE exam_report (
-    report_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '报告ID',
-    record_id BIGINT NOT NULL COMMENT '检查记录ID',
-    patient_id BIGINT NOT NULL COMMENT '患者ID',
-    report_no VARCHAR(30) UNIQUE NOT NULL COMMENT '报告编号',
-    report_title VARCHAR(200) COMMENT '报告标题',
-    report_content TEXT COMMENT '报告内容',
-    conclusion TEXT COMMENT '检查结论',
-    suggestion TEXT COMMENT '建议',
-    report_doctor VARCHAR(50) COMMENT '报告医生',
-    report_date DATE COMMENT '报告日期',
-    status TINYINT DEFAULT 1 COMMENT '状态：1草稿，2已发布',
-    del_flag TINYINT DEFAULT 0 COMMENT '删除标志：0存在，1删除',
-    create_by VARCHAR(50) COMMENT '创建者',
-    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    update_by VARCHAR(50) COMMENT '更新者',
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='检查报告表';
+-- 已合并到 exam_record 表，删除独立的检查报告表
+-- DROP TABLE IF EXISTS exam_report;
 
 -- ========================================
 -- 初始化数据
@@ -450,8 +442,10 @@ CREATE INDEX idx_exam_record_doctor_id ON exam_record(doctor_id);
 CREATE INDEX idx_exam_record_date ON exam_record(exam_date);
 CREATE INDEX idx_exam_record_item_record_id ON exam_record_item(record_id);
 CREATE INDEX idx_exam_record_item_item_id ON exam_record_item(item_id);
-CREATE INDEX idx_exam_report_record_id ON exam_report(record_id);
-CREATE INDEX idx_exam_report_patient_id ON exam_report(patient_id);
+-- 报告相关索引（合并至 exam_record）
+CREATE INDEX idx_exam_record_report_no ON exam_record(report_no);
+CREATE INDEX idx_exam_record_report_date ON exam_record(report_date);
+CREATE INDEX idx_exam_record_report_status ON exam_record(report_status);
 
 -- 创建外键约束
 ALTER TABLE sys_user ADD CONSTRAINT fk_sys_user_dept_id FOREIGN KEY (dept_id) REFERENCES sys_dept(dept_id);
@@ -465,8 +459,7 @@ ALTER TABLE exam_record ADD CONSTRAINT fk_exam_record_patient_id FOREIGN KEY (pa
 ALTER TABLE exam_record ADD CONSTRAINT fk_exam_record_doctor_id FOREIGN KEY (doctor_id) REFERENCES sys_user(user_id);
 ALTER TABLE exam_record_item ADD CONSTRAINT fk_exam_record_item_record_id FOREIGN KEY (record_id) REFERENCES exam_record(record_id);
 ALTER TABLE exam_record_item ADD CONSTRAINT fk_exam_record_item_item_id FOREIGN KEY (item_id) REFERENCES exam_item(item_id);
-ALTER TABLE exam_report ADD CONSTRAINT fk_exam_report_record_id FOREIGN KEY (record_id) REFERENCES exam_record(record_id);
-ALTER TABLE exam_report ADD CONSTRAINT fk_exam_report_patient_id FOREIGN KEY (patient_id) REFERENCES patient_info(patient_id);
+-- 删除 exam_report 外键（因表已合并、删除）
 
 -- 初始化完成提示
 SELECT '数据库初始化完成！' AS message;

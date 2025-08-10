@@ -101,4 +101,30 @@ public interface ExamRecordMapper extends BaseMapper<ExamRecord> {
      * @return 数量
      */
     int countTodayExamRecord();
+    
+    /**
+     * 分页查询检查记录列表
+     * 
+     * @param offset 偏移量
+     * @param size 每页大小
+     * @param patientId 患者ID（可选）
+     * @return 检查记录集合
+     */
+    List<ExamRecord> selectExamRecordListWithPage(@Param("offset") int offset, @Param("size") int size, @Param("patientId") Long patientId);
+    
+    /**
+     * 查询报告列表
+     * 
+     * @param examRecord 检查记录
+     * @return 报告集合
+     */
+    List<ExamRecord> selectReportList(ExamRecord examRecord);
+    
+    /**
+     * 根据记录ID查询报告详情
+     * 
+     * @param recordId 记录ID
+     * @return 报告详情
+     */
+    ExamRecord selectReportById(Long recordId);
 } 

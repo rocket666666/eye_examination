@@ -62,6 +62,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Help',
         component: () => import('@/views/Help.vue'),
         meta: { title: '帮助说明', requireAuth: true }
+      },
+      {
+        path: '/exam-report',
+        name: 'ExamReport',
+        component: () => import('@/views/ExamReport.vue'),
+        meta: { title: '检查报告', requireAuth: true }
       }
     ]
   },

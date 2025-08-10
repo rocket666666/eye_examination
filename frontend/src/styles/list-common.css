@@ -1,0 +1,176 @@
+/* 列表页面通用样式 */
+
+/* 页面容器 */
+.list-page-container {
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.list-page-content {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 0px;
+  padding-bottom: 20px;
+  min-height: calc(100vh - 110px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* 面包屑导航 */
+.breadcrumb-container {
+  background: white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 40px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.breadcrumb-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.breadcrumb-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+/* 主内容区域 */
+.main-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 搜索栏 */
+.search-bar {
+  background: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.search-bar .el-form {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.search-bar .el-form-item {
+  margin-bottom: 0;
+}
+
+/* 操作按钮栏 */
+.action-bar {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.action-left,
+.action-right {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+/* 表格容器 */
+.table-container {
+  background: white;
+  padding: 20px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 分页容器 */
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+/* 面包屑链接样式 */
+:deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
+  color: #606266;
+}
+
+:deep(.el-breadcrumb__item:not(:last-child) .el-breadcrumb__inner:hover) {
+  color: #409eff;
+  cursor: pointer;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .list-page-content {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+  
+  .breadcrumb-container {
+    flex-direction: column;
+    gap: 5px;
+    align-items: stretch;
+  }
+  
+  .breadcrumb-right {
+    justify-content: center;
+  }
+  
+  .action-bar {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+  
+  .action-left,
+  .action-right {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .action-btn {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+} 

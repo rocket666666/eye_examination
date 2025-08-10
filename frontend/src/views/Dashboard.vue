@@ -29,12 +29,12 @@
       </div>
       
       <!-- 第二行 -->
-      <div class="grid-item inactive">
+      <div class="grid-item active" @click="handleNavigate('/exam-report')">
         <div class="grid-icon">
           <el-icon><Document /></el-icon>
         </div>
         <div class="grid-title">检查报告</div>
-        <div class="grid-desc">即将开放</div>
+        <div class="grid-desc">查看检查记录与报告</div>
       </div>
       
       <div class="grid-item inactive">

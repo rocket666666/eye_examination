@@ -23,6 +23,9 @@ public class SysUser {
     /** 用户昵称 */
     private String nickName;
     
+    /** 真实姓名 */
+    private String realName;
+    
     /** 邮箱 */
     private String email;
     
@@ -40,7 +43,7 @@ public class SysUser {
     
     /** 删除标志（0代表存在 1代表删除） */
     @TableLogic
-    private String deleted;
+    private String delFlag;
     
     /** 创建者 */
     @TableField(fill = FieldFill.INSERT)
@@ -90,6 +93,9 @@ public class SysUser {
     public String getNickName() { return nickName; }
     public void setNickName(String nickName) { this.nickName = nickName; }
     
+    public String getRealName() { return realName; }
+    public void setRealName(String realName) { this.realName = realName; }
+    
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     
@@ -104,10 +110,15 @@ public class SysUser {
     
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-    
-    public String getDeleted() { return deleted; }
-    public void setDeleted(String deleted) { this.deleted = deleted; }
-    
+
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
+
     public String getCreateBy() { return createBy; }
     public void setCreateBy(String createBy) { this.createBy = createBy; }
     

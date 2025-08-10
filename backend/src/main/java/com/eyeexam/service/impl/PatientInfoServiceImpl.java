@@ -2,6 +2,7 @@ package com.eyeexam.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.eyeexam.common.CommonUtil;
 import com.eyeexam.entity.PatientInfo;
 import com.eyeexam.entity.PatientCheckRecord;
@@ -22,7 +23,7 @@ import java.util.List;
  * 患者信息Service业务层处理
  */
 @Service
-public class PatientInfoServiceImpl implements IPatientInfoService {
+public class PatientInfoServiceImpl extends ServiceImpl<PatientInfoMapper, PatientInfo> implements IPatientInfoService {
 
     @Autowired
     private PatientInfoMapper patientInfoMapper;
@@ -159,7 +160,7 @@ public class PatientInfoServiceImpl implements IPatientInfoService {
             patientInfo.setId(checkRecord.getPatientId());
             patientInfo.setLastCheckDate(checkRecord.getCheckDate());
             patientInfo.setLastCheckId(checkRecord.getId());
-            patientInfo.setLastReportCode(checkRecord.getReportCode());
+            patientInfo.setLastRecordCode(checkRecord.getReportCode());
             
             patientInfoMapper.updateById(patientInfo);
         }

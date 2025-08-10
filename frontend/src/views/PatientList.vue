@@ -1,9 +1,7 @@
 <template>
-  <div class="patient-list-container">
+  <div class="list-page-container">
 
-
-
-    <div class="patient-content">
+    <div class="list-page-content">
       <!-- 面包屑导航 -->
       <div class="breadcrumb-container">
         <div class="breadcrumb-left">
@@ -20,127 +18,133 @@
         </div>
       </div>
 
-      <!-- 搜索栏 -->
-      <div class="search-bar">
-        <el-form :model="searchForm" inline>
-          <el-form-item label="姓名">
-            <el-input
-              v-model="searchForm.name"
-              placeholder="请输入患者姓名"
-              clearable
-              style="width: 200px"
-            />
-          </el-form-item>
-          <el-form-item label="编号">
-            <el-input
-              v-model="searchForm.code"
-              placeholder="请输入患者编号"
-              clearable
-              style="width: 200px"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch">
-              <el-icon><Search /></el-icon>
-              搜索
-            </el-button>
-            <el-button @click="handleReset">
-              <el-icon><Refresh /></el-icon>
-              重置
-            </el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-
-      <!-- 操作按钮栏 -->
-      <div class="action-bar">
-        <div class="action-left">
-          <el-button type="success" @click="handleAdd" class="action-btn">
-            <el-icon><Plus /></el-icon>
-            新增患者
-          </el-button>
-          <el-button type="warning" @click="handleSelectedEdit" class="action-btn" :disabled="selectedPatients.length !== 1">
-            <el-icon><Edit /></el-icon>
-            编辑
-          </el-button>
-          <el-button type="danger" @click="handleSelectedDelete" class="action-btn" :disabled="selectedPatients.length === 0">
-            <el-icon><Delete /></el-icon>
-            删除
-          </el-button>
+      <!-- 主要内容区域 -->
+      <div class="main-content">
+        <!-- 搜索栏 -->
+        <div class="search-bar">
+          <el-form :model="searchForm" inline>
+            <el-form-item label="姓名">
+              <el-input
+                v-model="searchForm.name"
+                placeholder="请输入患者姓名"
+                clearable
+                style="width: 200px"
+              />
+            </el-form-item>
+            <el-form-item label="编号">
+              <el-input
+                v-model="searchForm.code"
+                placeholder="请输入患者编号"
+                clearable
+                style="width: 200px"
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="handleSearch">
+                <el-icon><Search /></el-icon>
+                搜索
+              </el-button>
+              <el-button @click="handleReset">
+                <el-icon><Refresh /></el-icon>
+                重置
+              </el-button>
+            </el-form-item>
+          </el-form>
         </div>
-        <div class="action-right">
-          <el-button type="info" @click="handleExport" class="action-btn">
-            <el-icon><Download /></el-icon>
-            导出数据
-          </el-button>
-          <el-button type="primary" @click="handleImport" class="action-btn">
-            <el-icon><Upload /></el-icon>
-            导入数据
-          </el-button>
+
+        <!-- 操作按钮栏 -->
+        <div class="action-bar">
+          <div class="action-left">
+            <el-button type="success" @click="handleAdd" class="action-btn">
+              <el-icon><Plus /></el-icon>
+              新增患者
+            </el-button>
+            <el-button type="warning" @click="handleSelectedEdit" class="action-btn" :disabled="selectedPatients.length !== 1">
+              <el-icon><Edit /></el-icon>
+              编辑
+            </el-button>
+            <el-button type="danger" @click="handleSelectedDelete" class="action-btn" :disabled="selectedPatients.length === 0">
+              <el-icon><Delete /></el-icon>
+              删除
+            </el-button>
+          </div>
+          <!-- <div class="action-right">
+            <el-button type="info" @click="handleExport" class="action-btn">
+              <el-icon><Download /></el-icon>
+              导出数据
+            </el-button>
+            <el-button type="primary" @click="handleImport" class="action-btn">
+              <el-icon><Upload /></el-icon>
+              导入数据
+            </el-button>
+          </div> -->
         </div>
-      </div>
 
-      <!-- 患者列表 -->
-      <div class="table-container">
-        <el-table
-          :data="patientList"
-          v-loading="loading"
-          stripe
-          @sort-change="handleSortChange"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="patientCode" label="患者编号" width="120" />
-          <el-table-column prop="fullName" label="姓名" width="100" />
-          <el-table-column prop="gender" label="性别" width="80">
-            <template #default="{ row }">
-              <span>{{ getGenderText(row.gender) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="age" label="年龄" width="80" />
-          <el-table-column prop="phone" label="联系电话" width="130" />
-          <el-table-column prop="lastCheckDate" label="上次检查时间" width="180">
-            <template #default="{ row }">
-              <span>{{ formatDateTime(row.lastCheckDate) || '暂无' }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="lastReportCode" label="上次报告编码" width="180">
-            <template #default="{ row }">
-              <span>{{ row.lastReportCode || '暂无' }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="createdAt" label="创建时间" width="180">
-            <template #default="{ row }">
-              <span>{{ formatDateTime(row.createdAt) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="250" fixed="right">
-            <template #default="{ row }">
-              <el-button link type="primary" @click="handleView(row)">
-                查看
-              </el-button>
-              <el-button link type="primary" @click="handleEdit(row)">
-                编辑
-              </el-button>
-              <el-button link type="danger" @click="handleDelete(row)">
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <!-- 患者列表 -->
+        <div class="table-container">
+          <el-table
+            :data="patientList"
+            v-loading="loading"
+            stripe
+            @sort-change="handleSortChange"
+            @selection-change="handleSelectionChange"
+          >
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="patientCode" label="患者编号" width="120" />
+            <el-table-column prop="fullName" label="姓名" width="100" />
+            <el-table-column prop="gender" label="性别" width="80">
+              <template #default="{ row }">
+                <span>{{ getGenderText(row.gender) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="age" label="年龄" width="80" />
+            <el-table-column prop="phone" label="联系电话" width="130" />
+            <el-table-column prop="lastCheckDate" label="上次检查时间" width="180">
+              <template #default="{ row }">
+                <span>{{ formatDateTime(row.lastCheckDate) || '暂无' }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="lastReportCode" label="上次报告编码" width="180">
+              <template #default="{ row }">
+                <span>{{ row.lastReportCode || '暂无' }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="createdAt" label="创建时间" width="180">
+              <template #default="{ row }">
+                <span>{{ formatDateTime(row.createdAt) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="250" fixed="right">
+              <template #default="{ row }">
+                <el-button link type="primary" @click="handleView(row)">
+                  查看
+                </el-button>
+                <el-button link type="primary" @click="handleEdit(row)">
+                  编辑
+                </el-button>
+                <el-button link type="danger" @click="handleDelete(row)">
+                  删除
+                </el-button>
+                <el-button link type="primary" @click="examination(row)">
+                  检查
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
 
-        <!-- 分页 -->
-        <div class="pagination-container">
-          <el-pagination
-            v-model:current-page="pagination.page"
-            v-model:page-size="pagination.size"
-            :total="pagination.total"
-            :page-sizes="[10, 20, 50, 100]"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-                </div>
+          <!-- 分页 -->
+          <div class="pagination-container">
+            <el-pagination
+              v-model:current-page="pagination.page"
+              v-model:page-size="pagination.size"
+              :total="pagination.total"
+              :page-sizes="[10, 20, 50, 100]"
+              layout="total, sizes, prev, pager, next, jumper"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -275,6 +279,7 @@ import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
 import { Plus, Search, Refresh, ArrowLeft, Edit, Delete, Download, Upload } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import { useAuthStore } from '@/stores/auth'
+import '@/styles/list-common.css'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -601,6 +606,14 @@ const handleImport = () => {
   ElMessage.info('导入功能正在开发中...')
 }
 
+// 检查患者
+const examination = (row: any) => {
+  // 将患者信息存储到本地存储，适配现有的缓存方式
+  localStorage.setItem('selectedPatient', JSON.stringify(row))
+  // 跳转到SVV检查页面
+  router.push('/svv-check')
+}
+
 
 
 // 提交表单
@@ -675,78 +688,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.patient-list-container {
-  background: #f5f5f5;
-  min-height: 100vh;
-}
-
-.patient-content {
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 0px;
-  padding-bottom: 20px;
-  min-height: calc(100vh - 110px);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.breadcrumb-container {
-  background: white;
-  padding: 8px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 40px;
-}
-
-.breadcrumb-left {
-  display: flex;
-  align-items: center;
-}
-
-.breadcrumb-right {
-  display: flex;
-  align-items: center;
-}
-
-.back-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 14px;
-}
-
-.search-bar {
-  background: white;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60px;
-}
-
-.search-bar .el-form {
-  margin: 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.search-bar .el-form-item {
-  margin-bottom: 0;
-}
-
+/* 页面特有样式 */
 /* 姓名输入组样式 */
 .name-input-group {
   display: flex;
@@ -756,89 +698,5 @@ onMounted(() => {
 
 .inline-form-item {
   margin-bottom: 0;
-}
-
-/* 操作按钮栏 */
-.action-bar {
-  background: white;
-  padding: 15px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.action-left,
-.action-right {
-  display: flex;
-  gap: 10px;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 14px;
-}
-
-.table-container {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
-:deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
-  color: #606266;
-}
-
-:deep(.el-breadcrumb__item:not(:last-child) .el-breadcrumb__inner:hover) {
-  color: #409eff;
-  cursor: pointer;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .patient-content {
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-  }
-  
-  .breadcrumb-container {
-    flex-direction: column;
-    gap: 5px;
-    align-items: stretch;
-  }
-  
-  .breadcrumb-right {
-    justify-content: center;
-  }
-  
-  .action-bar {
-    flex-direction: column;
-    gap: 15px;
-    align-items: stretch;
-  }
-  
-  .action-left,
-  .action-right {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .action-btn {
-    font-size: 12px;
-    padding: 8px 12px;
-  }
 }
 </style> 

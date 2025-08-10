@@ -30,6 +30,26 @@
           :height="canvasSize"
           @contextmenu.prevent
         ></canvas>
+        
+        <!-- 全屏确认按钮 -->
+        <div v-if="isFullscreen" class="fullscreen-confirm">
+          <div class="confirm-section">
+            <el-button 
+              type="success"
+              size="large"
+              @click="confirmCurrentResult"
+              class="confirm-btn"
+            >
+              <el-icon><Check /></el-icon>
+              确认当前结果
+            </el-button>
+            <div class="save-count">
+              <span class="count-label">已保存:</span>
+              <span class="count-value">{{ savedResults.length }}</span>
+              <span class="count-unit">次</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -38,6 +58,29 @@
       <!-- 控制面板 -->
       <div class="control-panel">
         <h3 class="panel-title">控制面板</h3>
+        
+        <!-- 患者信息 -->
+        <div class="patient-info-section" v-if="currentPatient">
+          <h4 class="section-title">患者信息</h4>
+          <div class="patient-info">
+            <div class="patient-item">
+              <span class="label">姓名：</span>
+              <span class="value">{{ currentPatient.fullName }}</span>
+            </div>
+            <div class="patient-item">
+              <span class="label">编号：</span>
+              <span class="value">{{ currentPatient.patientCode }}</span>
+            </div>
+            <div class="patient-item">
+              <span class="label">年龄：</span>
+              <span class="value">{{ currentPatient.age }}岁</span>
+            </div>
+            <div class="patient-item">
+              <span class="label">性别：</span>
+              <span class="value">{{ getGenderText(currentPatient.gender) }}</span>
+            </div>
+          </div>
+        </div>
         
         <!-- 开始检测按钮 -->
         <div class="start-detection-section">
@@ -51,6 +94,47 @@
             {{ isFullscreen ? '退出全屏' : '开始检测' }}
           </el-button>
         </div>
+        
+        <!-- 保存结果按钮 -->
+        <div class="save-result-section">
+          <el-button 
+            type="primary"
+            size="large"
+            @click="saveExamResult"
+            class="save-result-btn"
+            :disabled="savedResults.length < 6"
+          >
+            <el-icon><Check /></el-icon>
+            保存结果
+          </el-button>
+          <div class="result-tip" v-if="savedResults.length < 6">
+            <el-icon><Warning /></el-icon>
+            <span>至少需要6次测试记录才能保存结果</span>
+          </div>
+        </div>
+        
+        <!-- 记录列表 -->
+        <div class="records-section">
+          <h4 class="section-title">记录列表</h4>
+          <div class="records-table">
+            <el-table :data="savedResults" style="width: 100%" size="small">
+              <el-table-column prop="index" label="序号" width="60">
+                <template #default="{ $index }">
+                  <span class="record-index">{{ $index + 1 }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="result" label="保存结果" min-width="200">
+                <template #default="{ row }">
+                  <span class="record-result">
+                    X轴: {{ row.horizontal.toFixed(1) }}°, Y轴: {{ row.vertical.toFixed(1) }}°
+                  </span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+        
+
         
         <div class="control-section">
           <h4 class="section-title">旋转控制</h4>
@@ -228,6 +312,7 @@
 
 import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
+import request from '@/utils/request'
 import { 
   DArrowRight, 
   DArrowLeft, 
@@ -251,6 +336,7 @@ const rotateDirection = ref<'CW' | 'CCW' | null>(null) // 旋转方向
 const showCircle = ref(true) // 显示参考圆盘
 const savedResults = ref<Array<{ horizontal: number; vertical: number }>>([])
 const isFullscreen = ref(false) // 全屏状态
+const currentPatient = ref<any>(null) // 当前患者信息
 
 // 全屏放大设置 - 可在此处修改放大比例
 const fullscreenScale = ref(120) // 全屏时的放大百分比（120 = 120%），可随时修改此数值
@@ -561,6 +647,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
 // 数据管理
 const saveResult = () => {
+  // 保存当前结果
   const result = {
     horizontal: horizontalAngle.value,
     vertical: verticalAngle.value
@@ -568,6 +655,83 @@ const saveResult = () => {
   savedResults.value.push(result)
   
   ElMessage.success(`已保存：X轴 ${result.horizontal.toFixed(1)}°，Y轴 ${result.vertical.toFixed(1)}°`)
+}
+
+// 保存检查结果到数据库
+// 全屏确认当前结果
+const confirmCurrentResult = () => {
+  const result = {
+    horizontal: horizontalAngle.value,
+    vertical: verticalAngle.value
+  }
+  
+  // 直接将结果添加到保存列表中
+  savedResults.value.push(result)
+  
+  ElMessage.success(`已保存：X轴 ${result.horizontal.toFixed(1)}°，Y轴 ${result.vertical.toFixed(1)}°`)
+}
+
+const saveExamResult = async () => {
+  if (savedResults.value.length < 6) {
+    ElMessage.warning('至少需要6次测试记录才能保存结果')
+    return
+  }
+  
+  if (!currentPatient.value) {
+    ElMessage.error('请先选择患者')
+    return
+  }
+  
+  try {
+    // 计算平均值
+    const avgHorizontal = savedResults.value.reduce((sum, result) => sum + result.horizontal, 0) / savedResults.value.length
+    const avgVertical = savedResults.value.reduce((sum, result) => sum + result.vertical, 0) / savedResults.value.length
+    
+    // 构建检查记录数据
+    const examRecord = {
+      patientId: currentPatient.value.id,
+      examDate: new Date().toISOString().split('T')[0],
+      examTime: new Date().toTimeString().split(' ')[0],
+      status: 3, // 已完成
+      totalAmount: 0,
+      remark: `SVV检查 - 平均X轴: ${avgHorizontal.toFixed(1)}°, 平均Y轴: ${avgVertical.toFixed(1)}°`
+    }
+    
+    // 构建检查项目明细数据
+    const examRecordItems = savedResults.value.map((result, index) => ({
+      itemId: 7, // SVV检查项目ID
+      itemResult: `X轴: ${result.horizontal.toFixed(1)}°, Y轴: ${result.vertical.toFixed(1)}°`,
+      itemValue: JSON.stringify({
+        horizontal: result.horizontal,
+        vertical: result.vertical
+      }),
+      isNormal: (Math.abs(result.horizontal) <= 2 && Math.abs(result.vertical) <= 2) ? 1 : 0,
+      status: 2, // 已完成
+      examTime: new Date().toISOString()
+    }))
+    
+    // 调用后端API保存数据
+    const response = await request.post('/exam-record/save', {
+      examRecord,
+      examRecordItems,
+      patientId: currentPatient.value.id
+    }) as any
+    
+    if (response.code === 200) {
+      ElMessage.success('检查结果保存成功！')
+      // 清空测试记录
+      savedResults.value = []
+      // 更新患者信息
+      if (response.data && response.data.patientInfo) {
+        currentPatient.value = { ...currentPatient.value, ...response.data.patientInfo }
+      }
+    } else {
+      ElMessage.error(response.message || '保存失败')
+    }
+  } catch (error) {
+    console.error('保存检查结果失败:', error)
+    ElMessage.error('保存失败，请检查网络连接')
+  }
 }
 
 const exportResults = () => {
@@ -627,6 +791,12 @@ const downloadFile = (content: string, filename: string) => {
   URL.revokeObjectURL(url)
 }
 
+// 性别文本转换
+const getGenderText = (gender: string) => {
+  const genderMap = { M: '男', F: '女', U: '保密' }
+  return genderMap[gender as keyof typeof genderMap] || '保密'
+}
+
 const newPatient = () => {
   fixed.value = false
   angle.value = 0.0
@@ -651,6 +821,16 @@ onMounted(() => {
   document.addEventListener('fullscreenchange', handleFullscreenChange)
   document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
   document.addEventListener('msfullscreenchange', handleFullscreenChange)
+  
+  // 从localStorage读取患者信息
+  const cachedPatient = localStorage.getItem('selectedPatient')
+  if (cachedPatient) {
+    try {
+      currentPatient.value = JSON.parse(cachedPatient)
+    } catch (error) {
+      console.error('解析患者信息失败:', error)
+    }
+  }
 })
 
 onUnmounted(() => {
@@ -827,6 +1007,181 @@ canvas {
 .start-detection-btn:hover {
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 20px rgba(103, 194, 58, 0.3) !important;
+}
+
+.save-result-section {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.save-result-btn {
+  width: 100% !important;
+  height: 50px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.save-result-btn :deep(.el-button__content) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+.save-result-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(64, 158, 255, 0.3) !important;
+}
+
+.result-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #fff7e6;
+  border: 1px solid #ffd591;
+  border-radius: 6px;
+  color: #d46b08;
+  font-size: 12px;
+}
+
+.result-tip .el-icon {
+  color: #fa8c16;
+  font-size: 14px;
+}
+
+
+
+.fullscreen-confirm {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.confirm-btn {
+  background: rgba(103, 194, 58, 0.9) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.confirm-btn:hover {
+  background: rgba(103, 194, 58, 1) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+.records-section {
+  margin-bottom: 25px;
+}
+
+.records-table {
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.records-table :deep(.el-table) {
+  background: #f8f9fa;
+}
+
+.records-table :deep(.el-table__header) {
+  background: #e9ecef;
+}
+
+.records-table :deep(.el-table__row) {
+  background: #f8f9fa;
+}
+
+.records-table :deep(.el-table__row:hover) {
+  background: #e9ecef;
+}
+
+.record-index {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: #409eff;
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 24px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.record-result {
+  color: #333;
+  font-size: 14px;
+}
+
+.confirm-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.save-count {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.count-label {
+  color: #666;
+  font-size: 14px;
+}
+
+.count-value {
+  color: #409eff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.count-unit {
+  color: #666;
+  font-size: 14px;
+}
+
+.patient-info-section {
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.patient-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.patient-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.patient-item .label {
+  color: #666;
+  font-weight: 500;
+}
+
+.patient-item .value {
+  color: #333;
+  font-weight: 600;
 }
 
 .control-section {

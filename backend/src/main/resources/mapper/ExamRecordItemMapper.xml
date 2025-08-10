@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eyeexam.mapper.ExamRecordItemMapper">
+    
+    <resultMap type="ExamRecordItem" id="ExamRecordItemResult">
+        <result property="id" column="id"/>
+        <result property="recordId" column="record_id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="itemResult" column="item_result"/>
+        <result property="itemValue" column="item_value"/>
+        <result property="isNormal" column="is_normal"/>
+        <result property="doctorAdvice" column="doctor_advice"/>
+        <result property="examDoctor" column="exam_doctor"/>
+        <result property="examTime" column="exam_time"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectExamRecordItemVo">
+        select id, record_id, item_id, item_result, item_value, is_normal, doctor_advice, exam_doctor, exam_time, status, create_by, create_time, update_by, update_time from exam_record_item
+    </sql>
+
+    <select id="selectByRecordId" parameterType="java.lang.Long" resultMap="ExamRecordItemResult">
+        <include refid="selectExamRecordItemVo"/>
+        where record_id = #{recordId}
+        order by create_time asc
+    </select>
+    
+    <select id="selectByItemId" parameterType="java.lang.Long" resultMap="ExamRecordItemResult">
+        <include refid="selectExamRecordItemVo"/>
+        where item_id = #{itemId}
+        order by create_time desc
+    </select>
+    
+    <delete id="deleteByRecordIds" parameterType="java.lang.Long">
+        delete from exam_record_item where record_id in 
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </delete>
+
+</mapper> 

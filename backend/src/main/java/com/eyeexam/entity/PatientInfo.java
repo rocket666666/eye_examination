@@ -68,7 +68,7 @@ public class PatientInfo {
     /**
      * 上次报告编码
      */
-    private String lastReportCode;
+    private String lastRecordCode;
     
     /**
      * 联系电话
@@ -132,8 +132,8 @@ public class PatientInfo {
     public Long getLastCheckId() { return lastCheckId; }
     public void setLastCheckId(Long lastCheckId) { this.lastCheckId = lastCheckId; }
     
-    public String getLastReportCode() { return lastReportCode; }
-    public void setLastReportCode(String lastReportCode) { this.lastReportCode = lastReportCode; }
+    public String getLastRecordCode() { return lastRecordCode; }
+    public void setLastRecordCode(String lastRecordCode) { this.lastRecordCode = lastRecordCode; }
     
     // 添加缺失的getter/setter方法
     public String getFirstName() { return firstName; }

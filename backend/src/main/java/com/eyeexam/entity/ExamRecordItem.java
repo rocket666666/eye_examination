@@ -94,4 +94,50 @@ public class ExamRecordItem {
      */
     @TableField(exist = false)
     private ExamItem examItem;
+    
+    // Getter and Setter methods
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public Long getRecordId() { return recordId; }
+    public void setRecordId(Long recordId) { this.recordId = recordId; }
+    
+    public Long getItemId() { return itemId; }
+    public void setItemId(Long itemId) { this.itemId = itemId; }
+    
+    public String getItemResult() { return itemResult; }
+    public void setItemResult(String itemResult) { this.itemResult = itemResult; }
+    
+    public String getItemValue() { return itemValue; }
+    public void setItemValue(String itemValue) { this.itemValue = itemValue; }
+    
+    public Integer getIsNormal() { return isNormal; }
+    public void setIsNormal(Integer isNormal) { this.isNormal = isNormal; }
+    
+    public String getDoctorAdvice() { return doctorAdvice; }
+    public void setDoctorAdvice(String doctorAdvice) { this.doctorAdvice = doctorAdvice; }
+    
+    public String getExamDoctor() { return examDoctor; }
+    public void setExamDoctor(String examDoctor) { this.examDoctor = examDoctor; }
+    
+    public LocalDateTime getExamTime() { return examTime; }
+    public void setExamTime(LocalDateTime examTime) { this.examTime = examTime; }
+    
+    public Integer getStatus() { return status; }
+    public void setStatus(Integer status) { this.status = status; }
+    
+    public String getCreateBy() { return createBy; }
+    public void setCreateBy(String createBy) { this.createBy = createBy; }
+    
+    public LocalDateTime getCreateTime() { return createTime; }
+    public void setCreateTime(LocalDateTime createTime) { this.createTime = createTime; }
+    
+    public String getUpdateBy() { return updateBy; }
+    public void setUpdateBy(String updateBy) { this.updateBy = updateBy; }
+    
+    public LocalDateTime getUpdateTime() { return updateTime; }
+    public void setUpdateTime(LocalDateTime updateTime) { this.updateTime = updateTime; }
+    
+    public ExamItem getExamItem() { return examItem; }
+    public void setExamItem(ExamItem examItem) { this.examItem = examItem; }
 } 

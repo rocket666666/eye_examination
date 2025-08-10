@@ -3,13 +3,14 @@ package com.eyeexam.service;
 import com.eyeexam.entity.PatientInfo;
 import com.eyeexam.entity.PatientCheckRecord;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
 /**
  * 患者信息Service接口
  */
-public interface IPatientInfoService {
+public interface IPatientInfoService extends IService<PatientInfo> {
 
     /**
      * 分页查询患者信息列表

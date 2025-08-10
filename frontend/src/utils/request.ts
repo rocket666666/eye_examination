@@ -7,7 +7,7 @@ import type { ApiResponse } from '@/types/api'
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.DEV ? 'http://localhost:8080/api' : '/api',
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json;charset=utf-8'

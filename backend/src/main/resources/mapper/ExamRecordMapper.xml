@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eyeexam.mapper.ExamRecordMapper">
+    
+    <resultMap type="ExamRecord" id="ExamRecordResult">
+        <result property="recordId" column="record_id"/>
+        <result property="recordNo" column="record_no"/>
+        <result property="patientId" column="patient_id"/>
+        <result property="doctorId" column="doctor_id"/>
+        <result property="examDate" column="exam_date"/>
+        <result property="examTime" column="exam_time"/>
+        <result property="status" column="status"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectExamRecordVo">
+        select record_id, record_no, patient_id, doctor_id, exam_date, exam_time, status, total_amount, del_flag, create_by, create_time, update_by, update_time, remark from exam_record
+    </sql>
+
+    <select id="selectExamRecordList" parameterType="ExamRecord" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        <where>  
+            <if test="recordNo != null  and recordNo != ''"> and record_no like concat('%', #{recordNo}, '%')</if>
+            <if test="patientId != null "> and patient_id = #{patientId}</if>
+            <if test="doctorId != null "> and doctor_id = #{doctorId}</if>
+            <if test="examDate != null "> and exam_date = #{examDate}</if>
+            <if test="status != null "> and status = #{status}</if>
+            and del_flag = 0
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectExamRecordById" parameterType="java.lang.Long" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        where record_id = #{recordId} and del_flag = 0
+    </select>
+    
+    <select id="selectExamRecordByNo" parameterType="java.lang.String" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        where record_no = #{recordNo} and del_flag = 0
+    </select>
+    
+    <select id="selectExamRecordListByPatientId" parameterType="java.lang.Long" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        where patient_id = #{patientId} and del_flag = 0
+        order by create_time desc
+    </select>
+    
+    <select id="selectExamRecordListByDoctorId" parameterType="java.lang.Long" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        where doctor_id = #{doctorId} and del_flag = 0
+        order by create_time desc
+    </select>
+    
+    <select id="selectExamRecordListByDate" parameterType="java.time.LocalDate" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        where exam_date = #{examDate} and del_flag = 0
+        order by create_time desc
+    </select>
+    
+    <select id="selectExamRecordListByDateRange" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        where exam_date between #{startDate} and #{endDate} and del_flag = 0
+        order by create_time desc
+    </select>
+    
+    <select id="checkRecordNoUnique" parameterType="java.lang.String" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        where record_no = #{recordNo} and del_flag = 0 limit 1
+    </select>
+    
+    <delete id="deleteExamRecordByIds" parameterType="java.lang.Long">
+        update exam_record set del_flag = 1 where record_id in 
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </delete>
+    
+    <select id="countExamRecordByStatus" parameterType="java.lang.Integer" resultType="int">
+        select count(*) from exam_record where status = #{status} and del_flag = 0
+    </select>
+    
+    <select id="countTodayExamRecord" resultType="int">
+        select count(*) from exam_record where exam_date = curdate() and del_flag = 0
+    </select>
+    
+    <select id="selectExamRecordListWithPage" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        <where>
+            <if test="patientId != null">
+                and patient_id = #{patientId}
+            </if>
+            and del_flag = 0
+        </where>
+        order by create_time desc
+        limit #{offset}, #{size}
+    </select>
+    
+    <select id="selectReportList" parameterType="ExamRecord" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        <where>
+            <if test="reportNo != null and reportNo != ''"> and report_no like concat('%', #{reportNo}, '%')</if>
+            <if test="reportTitle != null and reportTitle != ''"> and report_title like concat('%', #{reportTitle}, '%')</if>
+            <if test="reportDoctor != null and reportDoctor != ''"> and report_doctor like concat('%', #{reportDoctor}, '%')</if>
+            <if test="reportDate != null"> and report_date = #{reportDate}</if>
+            <if test="reportStatus != null"> and report_status = #{reportStatus}</if>
+            <if test="patientId != null"> and patient_id = #{patientId}</if>
+            and del_flag = 0
+        </where>
+        order by report_date desc, create_time desc
+    </select>
+    
+    <select id="selectReportById" parameterType="java.lang.Long" resultMap="ExamRecordResult">
+        <include refid="selectExamRecordVo"/>
+        where record_id = #{recordId} and del_flag = 0
+    </select>
+
+</mapper> 

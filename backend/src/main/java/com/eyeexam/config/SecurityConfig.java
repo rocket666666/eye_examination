@@ -105,6 +105,10 @@ public class SecurityConfig {
             .antMatchers("/api/auth/login", "/api/auth/register").permitAll()
             // 验证码接口允许匿名访问
             .antMatchers("/api/captcha/**").permitAll()
+            // 检查记录保存接口允许匿名访问
+            .antMatchers("/api/exam-record/save").permitAll()
+            // 检查报告相关接口允许匿名访问
+            .antMatchers("/api/exam-record/report/**").permitAll()
             // SVV检查工具接口需要认证
             .antMatchers("/api/svv/**").authenticated()
             // 静态资源允许匿名访问

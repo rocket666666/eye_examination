@@ -87,6 +87,32 @@
 
     </div>
 
+    <!-- 患者选择对话框 -->
+    <el-dialog 
+      v-model="patientSelectVisible" 
+      title="选择患者" 
+      width="800px"
+    >
+      <div class="patient-select-content">
+        <div class="select-tip">
+          <el-icon><InfoFilled /></el-icon>
+          <span>请选择要进行SVV检查的患者，或点击"新增患者"添加新患者</span>
+        </div>
+        
+        <div class="patient-list-container">
+          <PatientListSelector @select-patient="selectPatient" />
+        </div>
+      </div>
+      
+      <template #footer>
+        <el-button @click="patientSelectVisible = false">取消</el-button>
+        <el-button type="primary" @click="$router.push('/patient')">
+          <el-icon><Plus /></el-icon>
+          新增患者
+        </el-button>
+      </template>
+    </el-dialog>
+
     <!-- SVV帮助对话框 -->
     <el-dialog 
       v-model="helpDialogVisible" 
@@ -151,16 +177,45 @@ import {
   Camera, 
   Aim,
   Warning,
-  ArrowLeft 
+  ArrowLeft,
+  InfoFilled,
+  Plus
 } from '@element-plus/icons-vue'
+import PatientListSelector from '@/components/PatientListSelector.vue'
 
 const router = useRouter()
 
 // 响应式数据
 const helpDialogVisible = ref(false)
 
+// 患者选择对话框
+const patientSelectVisible = ref(false)
+const selectedPatient = ref<any>(null)
+
+// 检查是否有选中的患者
+const checkSelectedPatient = () => {
+//  const cachedPatient = localStorage.getItem('selectedPatient')
+  // if (cachedPatient) {
+  //   selectedPatient.value = JSON.parse(cachedPatient)
+  //   return true
+  // }
+  return false
+}
+
 // 跳转到SVV检查页面
 const goToSVVCheck = () => {
+  if (checkSelectedPatient()) {
+    router.push('/svv-check')
+  } else {
+    patientSelectVisible.value = true
+  }
+}
+
+// 选择患者
+const selectPatient = (patient: any) => {
+  selectedPatient.value = patient
+  localStorage.setItem('selectedPatient', JSON.stringify(patient))
+  patientSelectVisible.value = false
   router.push('/svv-check')
 }
 
@@ -504,5 +559,33 @@ const backToDashboard = () => {
   .page-title {
     font-size: 24px;
   }
+}
+
+/* 患者选择对话框样式 */
+.patient-select-content {
+  padding: 10px 0;
+}
+
+.select-tip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  color: #0369a1;
+  font-size: 14px;
+}
+
+.select-tip .el-icon {
+  color: #0ea5e9;
+  font-size: 16px;
+}
+
+.patient-list-container {
+  max-height: 400px;
+  overflow-y: auto;
 }
 </style>
