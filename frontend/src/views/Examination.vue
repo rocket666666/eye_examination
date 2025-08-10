@@ -84,6 +84,71 @@
         </div>
       </div>
 
+      <!-- SVH检查工具 -->
+      <div class="exam-card svh-card">
+        <div class="card-header">
+          <div class="card-icon">
+            <el-icon><Aim /></el-icon>
+          </div>
+          <h3 class="card-title">SVH检查工具</h3>
+          <p class="card-subtitle">主观水平视觉检查</p>
+        </div>
+        
+        <div class="card-content">
+          <div class="feature-list">
+            <div class="feature-item">
+              <el-icon><Check /></el-icon>
+              <span>水平视觉感知评估</span>
+            </div>
+            <div class="feature-item">
+              <el-icon><Check /></el-icon>
+              <span>侧向平衡功能检查</span>
+            </div>
+            <div class="feature-item">
+              <el-icon><Check /></el-icon>
+              <span>前庭系统侧向评估</span>
+            </div>
+            <div class="feature-item">
+              <el-icon><Check /></el-icon>
+              <span>与SVV形成互补检查</span>
+            </div>
+          </div>
+          
+          <div class="tool-info">
+            <div class="info-item">
+              <span class="label">检查精度:</span>
+              <span class="value">±0.1°</span>
+            </div>
+            <div class="info-item">
+              <span class="label">正常范围:</span>
+              <span class="value">±2°以内</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-actions">
+          <el-button 
+            type="primary" 
+            size="large" 
+            @click="goToSVHCheck"
+            class="start-btn"
+          >
+            <el-icon><VideoPlay /></el-icon>
+            开始SVH检查
+          </el-button>
+          
+          <el-button 
+            type="info" 
+            size="large" 
+            @click="showSVHHelp"
+            class="help-btn"
+          >
+            <el-icon><QuestionFilled /></el-icon>
+            使用说明
+          </el-button>
+        </div>
+      </div>
+
 
     </div>
 
@@ -96,7 +161,7 @@
       <div class="patient-select-content">
         <div class="select-tip">
           <el-icon><InfoFilled /></el-icon>
-          <span>请选择要进行SVV检查的患者，或点击"新增患者"添加新患者</span>
+          <span>请选择要进行检查的患者，或点击"新增患者"添加新患者</span>
         </div>
         
         <div class="patient-list-container">
@@ -115,7 +180,7 @@
 
     <!-- SVV帮助对话框 -->
     <el-dialog 
-      v-model="helpDialogVisible" 
+      v-model="svvHelpDialogVisible" 
       title="SVV检查工具使用说明" 
       width="600px"
     >
@@ -159,6 +224,56 @@
       </div>
       
       <template #footer>
+        <el-button @click="svvHelpDialogVisible = false">知道了</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- SVH帮助对话框 -->
+    <el-dialog 
+      v-model="helpDialogVisible" 
+      title="SVH检查工具使用说明" 
+      width="600px"
+    >
+      <div class="help-content">
+        <h4>什么是SVH检查？</h4>
+        <p>SVH（主观水平视觉）检查是评估患者水平感知能力的重要神经学测试，主要用于前庭系统侧向功能评估和平衡障碍诊断。本系统提供了先进的在线SVH检查工具。</p>
+        
+        <h4>功能特点：</h4>
+        <ul class="feature-list">
+          <li>✅ 高精度角度测量（±0.1°精度）</li>
+          <li>✅ 3D渐变线条视觉效果</li>
+          <li>✅ 多种操作方式（键盘+鼠标+按钮）</li>
+          <li>✅ 实时角度显示</li>
+          <li>✅ 数据保存和导出功能</li>
+          <li>✅ 响应式设计，支持各种设备</li>
+        </ul>
+        
+        <h4>操作说明：</h4>
+        <ul class="shortcut-list">
+          <li><kbd>←/→</kbd> 自动旋转控制</li>
+          <li><kbd>↑</kbd> 保存当前结果</li>
+          <li><kbd>↓</kbd> 停止旋转</li>
+          <li><kbd>滚轮</kbd> 精细微调</li>
+          <li><kbd>双击</kbd> 固定线条</li>
+          <li><kbd>按钮</kbd> 完整功能控制</li>
+        </ul>
+        
+        <h4>使用流程：</h4>
+        <ol class="procedure-list">
+          <li>点击"开始SVH检查"进入检查界面</li>
+          <li>患者面向显示器，保持头部稳定</li>
+          <li>使用控制方式调整线条角度</li>
+          <li>保存多次测量结果</li>
+          <li>填写患者信息并导出报告</li>
+        </ol>
+        
+        <div class="notice">
+          <el-icon><Warning /></el-icon>
+          <span>建议：在安静环境中进行检查，确保显示器亮度适中，患者视线与屏幕垂直。</span>
+        </div>
+      </div>
+      
+      <template #footer>
         <el-button @click="helpDialogVisible = false">知道了</el-button>
       </template>
     </el-dialog>
@@ -187,18 +302,20 @@ const router = useRouter()
 
 // 响应式数据
 const helpDialogVisible = ref(false)
+const svvHelpDialogVisible = ref(false) // Added for SVV help dialog
 
 // 患者选择对话框
 const patientSelectVisible = ref(false)
 const selectedPatient = ref<any>(null)
+const targetPage = ref<string>('') // 添加目标页面跟踪
 
 // 检查是否有选中的患者
 const checkSelectedPatient = () => {
-//  const cachedPatient = localStorage.getItem('selectedPatient')
-  // if (cachedPatient) {
-  //   selectedPatient.value = JSON.parse(cachedPatient)
-  //   return true
-  // }
+  const cachedPatient = null
+  if (cachedPatient) {
+    selectedPatient.value = JSON.parse(cachedPatient)
+    return true
+  }
   return false
 }
 
@@ -207,6 +324,17 @@ const goToSVVCheck = () => {
   if (checkSelectedPatient()) {
     router.push('/svv-check')
   } else {
+    targetPage.value = '/svv-check'
+    patientSelectVisible.value = true
+  }
+}
+
+// 跳转到SVH检查页面
+const goToSVHCheck = () => {
+  if (checkSelectedPatient()) {
+    router.push('/svh-check')
+  } else {
+    targetPage.value = '/svh-check'
     patientSelectVisible.value = true
   }
 }
@@ -216,11 +344,20 @@ const selectPatient = (patient: any) => {
   selectedPatient.value = patient
   localStorage.setItem('selectedPatient', JSON.stringify(patient))
   patientSelectVisible.value = false
-  router.push('/svv-check')
+  // 根据目标页面进行跳转
+  if (targetPage.value) {
+    router.push(targetPage.value)
+    targetPage.value = '' // 清空目标页面
+  }
 }
 
 // 显示SVV帮助
 const showSVVHelp = () => {
+  svvHelpDialogVisible.value = true
+}
+
+// 显示SVH帮助
+const showSVHHelp = () => {
   helpDialogVisible.value = true
 }
 
@@ -312,6 +449,24 @@ const backToDashboard = () => {
 
 .svv-card {
   border-top: 4px solid #409eff;
+}
+
+.svh-card {
+  border-top: 4px solid #67c23a;
+}
+
+.svh-card .card-icon {
+  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+}
+
+.svh-card .start-btn {
+  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+  border-color: #67c23a;
+}
+
+.svh-card .start-btn:hover {
+  background: linear-gradient(135deg, #5daf34 0%, #73c24a 100%);
+  border-color: #5daf34;
 }
 
 .placeholder-card {

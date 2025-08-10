@@ -58,6 +58,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'SVV检查工具', requireAuth: true }
       },
       {
+        path: '/svh-check',
+        name: 'SVHCheck',
+        component: () => import('@/views/SVHCheck.vue'),
+        meta: { title: 'SVH检查工具', requireAuth: true }
+      },
+      {
         path: '/help',
         name: 'Help',
         component: () => import('@/views/Help.vue'),

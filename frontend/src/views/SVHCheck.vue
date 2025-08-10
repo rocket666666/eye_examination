@@ -1,5 +1,5 @@
 <template>
-  <div class="svv-check-page">
+  <div class="svh-check-page">
     <!-- 页面头部 -->
     <div class="page-header">
       <el-button type="info" @click="showInstructions">
@@ -8,12 +8,11 @@
         </el-button>
       
       <div class="header-content">
-        <h1 class="page-title">SVV检查工具</h1>
-        <p class="page-subtitle">主观垂直视觉检查 - 在线版本</p>
+        <h1 class="page-title">SVH检查工具</h1>
+        <p class="page-subtitle">主观水平视觉检查 - 在线版本</p>
       </div>
       
       <div class="header-actions">
-
         <el-button 
         type="text" 
         @click="goBack"
@@ -25,20 +24,20 @@
       </div>
     </div>
 
-    <!-- SVV检查组件 -->
-    <SVVCanvas />
+    <!-- SVH检查组件 -->
+    <SVHCanvas />
 
     <!-- 使用说明对话框 -->
     <el-dialog 
       v-model="instructionsVisible" 
-      title="SVV检查工具使用说明" 
+      title="SVH检查工具使用说明" 
       width="600px"
       :show-close="true"
     >
       <div class="instructions-content">
         <div class="instruction-section">
-          <h4>什么是SVV检查？</h4>
-          <p>SVV（主观垂直视觉）检查是评估患者垂直感知能力的重要神经学测试，主要用于前庭系统功能评估和脑干病变诊断。</p>
+          <h4>什么是SVH检查？</h4>
+          <p>SVH（主观水平视觉）检查是评估患者水平视觉感知能力的重要神经学测试，主要用于前庭系统功能评估和脑干病变诊断，与SVV检查形成互补。</p>
         </div>
         
         <div class="instruction-section">
@@ -81,7 +80,7 @@
           <ol class="procedure-list">
             <li>患者坐在显示器前，保持头部稳定</li>
             <li>使用控制按钮或快捷键调整线条角度</li>
-            <li>让患者调整线条到认为的垂直位置</li>
+            <li>让患者调整线条到认为的水平位置</li>
             <li>点击"保存结果"记录当前角度</li>
             <li>重复多次测量以提高准确性</li>
             <li>完成后填写患者信息并导出报告</li>
@@ -107,12 +106,39 @@
         </div>
 
         <div class="instruction-section">
+          <h4>SVH vs SVV 区别：</h4>
+          <div class="comparison-table">
+            <div class="comparison-row">
+              <div class="comparison-label">检查方向</div>
+              <div class="comparison-svh">水平视觉感知</div>
+              <div class="comparison-svv">垂直视觉感知</div>
+            </div>
+            <div class="comparison-row">
+              <div class="comparison-label">主要用途</div>
+              <div class="comparison-svh">水平平衡评估</div>
+              <div class="comparison-svv">垂直平衡评估</div>
+            </div>
+            <div class="comparison-row">
+              <div class="comparison-label">病变定位</div>
+              <div class="comparison-svh">侧向病变</div>
+              <div class="comparison-svv">前后病变</div>
+            </div>
+            <div class="comparison-row">
+              <div class="comparison-label">线条颜色</div>
+              <div class="comparison-svh">蓝色系</div>
+              <div class="comparison-svv">灰色系</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="instruction-section">
           <h4>注意事项：</h4>
           <ul class="notice-list">
             <li>确保检查环境安静，避免干扰</li>
             <li>患者应保持头部稳定，不要倾斜</li>
             <li>建议进行多次测量取平均值</li>
             <li>如有眩晕症状，请适当休息</li>
+            <li>SVH和SVV检查可结合使用，提供更全面的前庭功能评估</li>
           </ul>
         </div>
       </div>
@@ -130,7 +156,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowLeft, QuestionFilled } from '@element-plus/icons-vue'
-import SVVCanvas from '@/components/SVVCanvas.vue'
+import SVHCanvas from '@/components/SVHCanvas.vue'
 
 const router = useRouter()
 const instructionsVisible = ref(false)
@@ -145,9 +171,9 @@ const showInstructions = () => {
 </script>
 
 <style scoped>
-.svv-check-page {
+.svh-check-page {
   min-height: 100vh;
-  background: #f0f2f5;
+  background: #f0f8ff;
 }
 
 .page-header {
@@ -280,7 +306,7 @@ const showInstructions = () => {
 
 .standard-item.normal {
   background: #f0f9ff;
-  border: 1px solid #67c23a;
+  border: 1px solid #409eff;
 }
 
 .standard-item.mild {
@@ -301,6 +327,53 @@ const showInstructions = () => {
 .standard-value {
   font-weight: 600;
   color: #409eff;
+}
+
+/* 对比表格样式 */
+.comparison-table {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+}
+
+.comparison-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.comparison-row:last-child {
+  border-bottom: none;
+}
+
+.comparison-row:first-child {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.comparison-label,
+.comparison-svh,
+.comparison-svv {
+  padding: 12px 15px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.comparison-svh {
+  background: #f0f8ff;
+  color: #409eff;
+  font-weight: 500;
+}
+
+.comparison-svv {
+  background: #f8fafc;
+  color: #666;
+  font-weight: 500;
 }
 
 .notice-list {
@@ -347,5 +420,17 @@ const showInstructions = () => {
     align-items: flex-start;
     gap: 5px;
   }
+  
+  .comparison-row {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  
+  .comparison-label,
+  .comparison-svh,
+  .comparison-svv {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
 }
-</style>
+</style> 
