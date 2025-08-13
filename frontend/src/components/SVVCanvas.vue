@@ -338,6 +338,16 @@ const savedResults = ref<Array<{ horizontal: number; vertical: number }>>([])
 const isFullscreen = ref(false) // 全屏状态
 const currentPatient = ref<any>(null) // 当前患者信息
 
+// 初始化SVV指针角度到垂直位置并添加随机偏差
+const initializeSVVAngle = () => {
+  // 生成-5到5度之间的随机值
+  const randomAngle = (Math.random() - 0.5) * 10 // -5到5度
+  // 将角度设置为垂直位置（90度或270度）加上随机值
+  const baseAngle = Math.random() > 0.5 ? 90 : 270
+  angle.value = (baseAngle + randomAngle) % 360
+  if (angle.value < 0) angle.value += 360
+}
+
 // 全屏放大设置 - 可在此处修改放大比例
 const fullscreenScale = ref(120) // 全屏时的放大百分比（120 = 120%），可随时修改此数值
 
@@ -669,6 +679,21 @@ const confirmCurrentResult = () => {
   savedResults.value.push(result)
   
   ElMessage.success(`已保存：X轴 ${result.horizontal.toFixed(1)}°，Y轴 ${result.vertical.toFixed(1)}°`)
+  
+  // 自动调整指针到水平位置并添加随机值
+  setTimeout(() => {
+    // 生成-5到5度之间的随机值
+    const randomAngle = (Math.random() - 0.5) * 10 // -5到5度
+    // 将角度设置为水平位置（0度或180度）加上随机值
+    const baseAngle = Math.random() > 0.5 ? 0 : 180
+    angle.value = (baseAngle + randomAngle) % 360
+    if (angle.value < 0) angle.value += 360
+    
+    // 重新绘制画布
+    drawSVV()
+    
+    ElMessage.info('指针已自动调整到水平位置')
+  }, 500) // 延迟500ms执行，让用户看到保存成功的消息
 }
 
 const saveExamResult = async () => {
@@ -799,7 +824,8 @@ const getGenderText = (gender: string) => {
 
 const newPatient = () => {
   fixed.value = false
-  angle.value = 0.0
+  // 重置到垂直位置并添加随机偏差
+  initializeSVVAngle()
   showCircle.value = true
   savedResults.value = []
   stopRotation()
@@ -815,6 +841,9 @@ const newPatient = () => {
 
 // 生命周期
 onMounted(() => {
+  // 初始化SVV指针角度到垂直位置
+  initializeSVVAngle()
+  
   drawSVV()
   window.addEventListener('keydown', handleKeyDown)
   // 添加全屏状态监听

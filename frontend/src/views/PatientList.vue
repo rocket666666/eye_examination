@@ -104,9 +104,9 @@
                 <span>{{ formatDateTime(row.lastCheckDate) || '暂无' }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="lastReportCode" label="上次报告编码" width="180">
+            <el-table-column prop="lastRecordCode" label="上次报告编码" width="180">
               <template #default="{ row }">
-                <span>{{ row.lastReportCode || '暂无' }}</span>
+                <span>{{ row.lastRecordCode || '暂无' }}</span>
               </template>
             </el-table-column>
             <el-table-column prop="createdAt" label="创建时间" width="180">
@@ -178,7 +178,7 @@
           {{ currentPatient?.lastCheckDate || '暂无' }}
         </el-descriptions-item>
         <el-descriptions-item label="上次报告编码">
-          {{ currentPatient?.lastReportCode || '暂无' }}
+          {{ currentPatient?.lastRecordCode || '暂无' }}
         </el-descriptions-item>
 
         <el-descriptions-item label="备注" span="2">
@@ -189,6 +189,47 @@
       <template #footer>
         <el-button @click="detailVisible = false">关闭</el-button>
         <el-button type="primary" @click="handleEditFromDetail">编辑</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 检查类型选择对话框 -->
+    <el-dialog
+      v-model="examinationDialogVisible"
+      title="选择检查类型"
+      width="400px"
+      center
+      :show-close="true"
+      :close-on-click-modal="false"
+    >
+      <div class="examination-choice-container">
+        <div class="choice-title">请选择要进行的检查类型：</div>
+        <div class="choice-buttons">
+          <el-button 
+            type="primary" 
+            size="large" 
+            class="choice-btn svv-btn"
+            @click="goToSVVCheck"
+          >
+            <el-icon><View /></el-icon>
+            SVV检查
+          </el-button>
+          
+          <el-button 
+            type="success" 
+            size="large" 
+            class="choice-btn svh-btn"
+            @click="goToSVHCheck"
+          >
+            <el-icon><View /></el-icon>
+            SVH检查
+          </el-button>
+        </div>
+      </div>
+      
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="examinationDialogVisible = false">取消</el-button>
+        </div>
       </template>
     </el-dialog>
 
@@ -295,6 +336,7 @@ const formMode = ref<'add' | 'edit'>('add')
 const currentPatient = ref<any>(null)
 const formRef = ref<FormInstance>()
 const selectedPatients = ref<any[]>([])
+const examinationDialogVisible = ref(false)
 
 // 搜索表单
 const searchForm = reactive({
@@ -610,8 +652,21 @@ const handleImport = () => {
 const examination = (row: any) => {
   // 将患者信息存储到本地存储，适配现有的缓存方式
   localStorage.setItem('selectedPatient', JSON.stringify(row))
-  // 跳转到SVV检查页面
+  
+  // 显示检查类型选择对话框
+  examinationDialogVisible.value = true
+}
+
+// 跳转到SVV检查页面
+const goToSVVCheck = () => {
+  examinationDialogVisible.value = false
   router.push('/svv-check')
+}
+
+// 跳转到SVH检查页面
+const goToSVHCheck = () => {
+  examinationDialogVisible.value = false
+  router.push('/svh-check')
 }
 
 
@@ -698,5 +753,81 @@ onMounted(() => {
 
 .inline-form-item {
   margin-bottom: 0;
+}
+
+/* 检查类型选择对话框样式 */
+.examination-choice-container {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.choice-title {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 30px;
+  font-weight: 500;
+}
+
+.choice-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.choice-btn {
+  width: 200px !important;
+  height: 80px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  border-radius: 12px !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.choice-btn:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.choice-btn .el-icon {
+  font-size: 24px !important;
+  margin-bottom: 4px !important;
+}
+
+.btn-description {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  opacity: 0.8 !important;
+  margin-top: 4px !important;
+}
+
+.svv-btn {
+  background: linear-gradient(135deg, #409eff 0%, #337ecc 100%) !important;
+  border: none !important;
+}
+
+.svv-btn:hover {
+  background: linear-gradient(135deg, #66b1ff 0%, #409eff 100%) !important;
+}
+
+.svh-btn {
+  background: linear-gradient(135deg, #67c23a 0%, #5daf34 100%) !important;
+  border: none !important;
+}
+
+.svh-btn:hover {
+  background: linear-gradient(135deg, #85ce61 0%, #67c23a 100%) !important;
+}
+
+.dialog-footer {
+  text-align: center;
+  padding-top: 20px;
 }
 </style> 

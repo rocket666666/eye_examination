@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +53,6 @@ public class ExamRecordController {
             examRecord.setExamTime(LocalTime.parse(examRecordData.get("examTime").toString()));
             examRecord.setStatus((Integer) examRecordData.get("status"));
             examRecord.setRemark((String) examRecordData.get("remark"));
-
             // 设置医生ID为当前登录用户
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
@@ -64,9 +60,11 @@ public class ExamRecordController {
                 SysUser current = userService.selectUserByUsername(username);
                 if (current != null) {
                     examRecord.setDoctorId(current.getUserId());
+                    examRecord.setCreateBy(username);
+                    examRecord.setCreateTime(new Date());
                 }
             }
-            
+
             // 生成检查单号
             String recordNo = "ER" + System.currentTimeMillis();
             examRecord.setRecordNo(recordNo);
