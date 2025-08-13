@@ -92,7 +92,12 @@ public class ExamRecordServiceImpl implements IExamRecordService {
     public ExamRecord selectReportById(Long recordId) {
         return examRecordMapper.selectReportById(recordId);
     }
-    
+
+    @Override
+    public ExamRecord selectReportByCode(String recordCode) {
+        return examRecordMapper.selectExamRecordByNo(recordCode);
+    }
+
     @Override
     public int insertReport(ExamRecord examRecord) {
         // 生成报告编号

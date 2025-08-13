@@ -13,7 +13,9 @@ public interface IExamRecordService {
     List<ExamRecord> selectExamRecordList(ExamRecord examRecord);
     
     ExamRecord selectExamRecordById(Long recordId);
-    
+
+    ExamRecord selectReportByCode(String recordCode);
+
     int insertExamRecord(ExamRecord examRecord);
     
     int updateExamRecord(ExamRecord examRecord);

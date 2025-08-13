@@ -195,9 +195,9 @@ public class ExamRecordController {
     /**
      * 获取报告详细信息
      */
-    @GetMapping(value = "/report/{recordId}")
-    public Result getReportInfo(@PathVariable("recordId") Long recordId) {
-        return Result.success(examRecordService.selectReportById(recordId));
+    @GetMapping(value = "/report/{recordCode}")
+    public Result getReportInfo(@PathVariable("recordCode") String recordCode) {
+        return Result.success(examRecordService.selectReportByCode(recordCode));
     }
 
     /**

@@ -98,7 +98,6 @@
               </template>
             </el-table-column>
             <el-table-column prop="age" label="年龄" width="80" />
-            <el-table-column prop="phone" label="联系电话" width="130" />
             <el-table-column prop="lastCheckDate" label="上次检查时间" width="180">
               <template #default="{ row }">
                 <span>{{ formatDateTime(row.lastCheckDate) || '暂无' }}</span>
@@ -106,7 +105,14 @@
             </el-table-column>
             <el-table-column prop="lastRecordCode" label="上次报告编码" width="180">
               <template #default="{ row }">
-                <span>{{ row.lastRecordCode || '暂无' }}</span>
+                <span 
+                  v-if="row.lastRecordCode" 
+                  class="clickable-record-code"
+                  @click="handleViewReport(row)"
+                >
+                  {{ row.lastRecordCode }}
+                </span>
+                <span v-else>暂无</span>
               </template>
             </el-table-column>
             <el-table-column prop="createdAt" label="创建时间" width="180">
@@ -189,6 +195,57 @@
       <template #footer>
         <el-button @click="detailVisible = false">关闭</el-button>
         <el-button type="primary" @click="handleEditFromDetail">编辑</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 报告详情对话框 -->
+    <el-dialog
+      v-model="reportDetailVisible"
+      title="检查报告详情"
+      width="62%"
+      :close-on-click-modal="false"
+    >
+      <div v-if="currentReport" class="report-detail">
+        <!-- 报告基本信息 -->
+        <el-card class="mb-4">
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="报告编号">{{ currentReport.recordNo }}</el-descriptions-item>
+            <el-descriptions-item label="报告总结">{{ currentReport.remark || '无' }}</el-descriptions-item>
+            <el-descriptions-item label="报告医生">{{ currentReport.doctor?.realName || currentReport.doctor?.nickName || currentReport.doctor?.username || '未知' }}</el-descriptions-item>
+            <el-descriptions-item label="患者姓名">{{ currentReport.patientInfo?.fullName || '未知' }}</el-descriptions-item>
+            <el-descriptions-item label="报告日期">{{ formatDateTime(currentReport.examDate) }}</el-descriptions-item>
+            <el-descriptions-item label="状态" :span="2">
+              <el-tag :type="getStatusTagType(currentReport.status)">
+                {{ getStatusText(currentReport.status) }}
+              </el-tag>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+        
+        <!-- 检查结果列表 -->
+        <el-card>
+          <el-table :data="examResults" stripe>
+            <el-table-column prop="examItem.itemName" label="检查项目" width="150">
+              <template #default="scope">
+                {{ scope.row.examItem?.itemName || '未知项目' }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="itemResult" label="检查结果" />
+            <el-table-column prop="isNormal" label="是否正常" width="100">
+              <template #default="scope">
+                <el-tag :type="scope.row.isNormal === 0 ? 'success' : 'danger'">
+                  {{ scope.row.isNormal === 0 ? '正常' : '异常' }}
+                </el-tag>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </div>
+      
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="reportDetailVisible = false">关闭</el-button>
+        </span>
       </template>
     </el-dialog>
 
@@ -337,6 +394,10 @@ const currentPatient = ref<any>(null)
 const formRef = ref<FormInstance>()
 const selectedPatients = ref<any[]>([])
 const examinationDialogVisible = ref(false)
+const reportDetailVisible = ref(false)
+const currentReport = ref<any>(null)
+const examResults = ref<any[]>([])
+
 
 // 搜索表单
 const searchForm = reactive({
@@ -541,7 +602,25 @@ const handleEditFromDetail = () => {
   detailVisible.value = false
   handleEdit(currentPatient.value)
 }
-
+const formatTime = (time: string) => {
+  if (!time) return ''
+  const m = String(time).match(/\d{2}:\d{2}(:\d{2})?/)
+  if (m) {
+    // 统一补成 HH:mm:ss 格式
+    const parts = m[0].split(':')
+    if (parts.length === 2) parts.push('00')
+    return parts.map(p => p.padStart(2, '0')).join(':')
+  }
+  // 尝试解析 ISO 或 Date 可识别格式
+  const d = new Date(`1970-01-01T${time}`)
+  if (!isNaN(d.getTime())) {
+    const hh = String(d.getHours()).padStart(2, '0')
+    const mm = String(d.getMinutes()).padStart(2, '0')
+    const ss = String(d.getSeconds()).padStart(2, '0')
+    return `${hh}:${mm}:${ss}`
+  }
+  return String(time)
+}
 // 删除患者
 const handleDelete = async (row: any) => {
   try {
@@ -669,6 +748,61 @@ const goToSVHCheck = () => {
   router.push('/svh-check')
 }
 
+// 查看报告详情
+const handleViewReport = async (row: any) => {
+  if (!row.lastRecordCode) {
+    ElMessage.warning('该患者暂无检查报告')
+    return
+  }
+  
+  try {
+    // 根据报告编号获取报告详情
+    const response = await request.get(`/exam-record/report/${row.lastRecordCode}`) as any
+    if (response.code === 200 && response.data) {
+      currentReport.value = response.data
+      // 获取检查结果数据
+      try {
+        const itemsResponse = await request.get(`/exam-record/${response.data.recordId}`)
+        if (itemsResponse.data && itemsResponse.data.items) {
+          examResults.value = itemsResponse.data.items || []
+        } else {
+          examResults.value = []
+        }
+      } catch (error) {
+        console.error('获取检查结果失败:', error)
+        examResults.value = []
+      }
+      reportDetailVisible.value = true
+    } else {
+      ElMessage.error(response.message || response.msg || '获取报告详情失败')
+    }
+  } catch (error) {
+    console.error('获取报告详情失败:', error)
+    ElMessage.error('获取报告详情失败，请检查网络连接')
+  }
+}
+
+// 获取报告状态文本
+const getStatusText = (status: number) => {
+  if (status === 2) {
+    return '未完成'
+  } else if (status === 3) {
+    return '已完成'
+  } else {
+    return '未知'
+  }
+}
+
+// 获取报告状态标签类型
+const getStatusTagType = (status: number) => {
+  if (status === 1) {
+    return 'warning' // 未完成
+  } else if (status === 2) {
+    return 'success' // 已完成
+  } else {
+    return 'info' // 其他状态
+  }
+}
 
 
 // 提交表单
@@ -753,6 +887,28 @@ onMounted(() => {
 
 .inline-form-item {
   margin-bottom: 0;
+}
+
+/* 可点击的报告编码样式 */
+.clickable-record-code {
+  color: #409eff;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.clickable-record-code:hover {
+  color: #66b1ff;
+}
+
+/* 报告详情样式 */
+.report-detail {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.mb-4 {
+  margin-bottom: 16px;
 }
 
 /* 检查类型选择对话框样式 */
