@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -45,7 +46,7 @@ public class ExamRecordController {
             Map<String, Object> examRecordData = (Map<String, Object>) requestData.get("examRecord");
             List<Map<String, Object>> examRecordItemsData = (List<Map<String, Object>>) requestData.get("examRecordItems");
             Long patientId = Long.valueOf(requestData.get("patientId").toString());
-
+            String recordType = (String) examRecordData.get("recordType");
             // 构建检查记录
             ExamRecord examRecord = new ExamRecord();
             examRecord.setPatientId(patientId);
@@ -53,6 +54,7 @@ public class ExamRecordController {
             examRecord.setExamTime(LocalTime.parse(examRecordData.get("examTime").toString()));
             examRecord.setStatus((Integer) examRecordData.get("status"));
             examRecord.setRemark((String) examRecordData.get("remark"));
+            examRecord.setRecordType(recordType);
             // 设置医生ID为当前登录用户
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
@@ -66,21 +68,37 @@ public class ExamRecordController {
             }
 
             // 生成检查单号
-            String recordNo = "ER" + System.currentTimeMillis();
+            String recordNo = examRecordService.generateExamRecordNo(recordType);
             examRecord.setRecordNo(recordNo);
 
             // 构建检查记录项目
             List<ExamRecordItem> examRecordItems = examRecordItemsData.stream()
-                .map(itemData -> {
-                    ExamRecordItem item = new ExamRecordItem();
-                    item.setItemId(Long.valueOf(itemData.get("itemId").toString()));
-                    item.setItemResult((String) itemData.get("itemResult"));
-                    item.setItemValue((String) itemData.get("itemValue"));
-                    item.setIsNormal((Integer) itemData.get("isNormal"));
-                    item.setStatus((Integer) itemData.get("status"));
-                    return item;
-                })
-                .collect(Collectors.toList());
+                    .map(itemData -> {
+                        BigDecimal horizontal = BigDecimal.valueOf((Double) itemData.get("horizontal"));
+                        BigDecimal vertical = BigDecimal.valueOf((Double) itemData.get("vertical"));
+                        ExamRecordItem item = new ExamRecordItem();
+                        item.setItemId(Long.valueOf(itemData.get("itemId").toString()));
+                        item.setItemResult((String) itemData.get("itemResult"));
+                        item.setItemValue((String) itemData.get("itemValue"));
+                        item.setIsNormal((Integer) itemData.get("isNormal"));
+                        if ("SVV".equals(recordType)) {
+                            BigDecimal absValue = vertical.abs();
+                            if (absValue.compareTo(BigDecimal.valueOf(3)) < 0) {
+                                item.setStatus(2);
+                            } else {
+                                item.setStatus(1);
+                            }
+                        } else {
+                            BigDecimal absValue = horizontal.abs();
+                            if (absValue.compareTo(BigDecimal.valueOf(3)) < 0) {
+                                item.setStatus(2);
+                            } else {
+                                item.setStatus(1);
+                            }
+                        }
+                        return item;
+                    })
+                    .collect(Collectors.toList());
 
             // 保存检查记录和项目
             examRecordService.saveExamRecordWithItems(examRecord, examRecordItems);
@@ -95,9 +113,9 @@ public class ExamRecordController {
             }
 
             return Result.success(Map.of(
-                "message", "检查结果保存成功",
-                "recordId", examRecord.getRecordId(),
-                "patientInfo", patientInfo
+                    "message", "检查结果保存成功",
+                    "recordId", examRecord.getRecordId(),
+                    "patientInfo", patientInfo
             ));
 
         } catch (Exception e) {
@@ -181,10 +199,10 @@ public class ExamRecordController {
         try {
             ExamRecord record = examRecordService.selectExamRecordById(recordId);
             List<ExamRecordItem> items = examRecordService.getExamRecordItems(recordId);
-            
+
             return Result.success(Map.of(
-                "record", record,
-                "items", items
+                    "record", record,
+                    "items", items
             ));
         } catch (Exception e) {
             return Result.error("获取检查记录详情失败: " + e.getMessage());
@@ -232,7 +250,7 @@ public class ExamRecordController {
     public Result removeReport(@PathVariable Long[] recordIds) {
         return Result.success(examRecordService.deleteReportByIds(recordIds));
     }
-    
+
     /**
      * 发布报告
      */
@@ -240,4 +258,6 @@ public class ExamRecordController {
     public Result publishReport(@PathVariable Long recordId) {
         return Result.success(examRecordService.publishReport(recordId));
     }
+
+
 } 

@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-card">
       <div class="login-header">
-        <h2>眼科检查系统</h2>
+        <h2>耳鼻咽喉科检查系统</h2>
         <p>业务登录</p>
       </div>
       

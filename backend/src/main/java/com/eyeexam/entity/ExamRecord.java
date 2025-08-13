@@ -27,7 +27,12 @@ public class ExamRecord {
      * 检查单号
      */
     private String recordNo;
-    
+
+    /**
+     * 检查类型
+     */
+    private String recordType;
+
     /**
      * 患者ID
      */
@@ -104,7 +109,15 @@ public class ExamRecord {
      */
     @TableField(exist = false)
     private SysUser doctor;
-    
+
+    public String getRecordType() {
+        return recordType;
+    }
+
+    public void setRecordType(String recordType) {
+        this.recordType = recordType;
+    }
+
     // Getter and Setter methods
     public Long getRecordId() { return recordId; }
     public void setRecordId(Long recordId) { this.recordId = recordId; }

@@ -2,7 +2,7 @@
   <div class="help-container">
     <div class="help-header">
       <h1 class="help-title">帮助说明</h1>
-      <p class="help-desc">眼科检查系统使用指南</p>
+      <p class="help-desc">耳鼻咽喉科系统使用指南</p>
     </div>
 
     <div class="help-content">
@@ -14,7 +14,7 @@
           </div>
         </template>
         <p>
-          眼科检查系统是一个专业的医疗检查工具平台，目前主要提供SVV（主观垂直视觉）检查功能。
+          耳鼻咽喉科是一个专业的医疗检查工具平台，目前主要提供SVV（主观垂直视觉）检查功能。
           系统采用现代化的Web界面结合专业的桌面检查工具，为医护人员提供便捷、准确的检查体验。
         </p>
       </el-card>

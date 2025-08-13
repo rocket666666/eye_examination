@@ -94,13 +94,41 @@ public class PatientInfoServiceImpl extends ServiceImpl<PatientInfoMapper, Patie
         if (patientInfo.getStatus() == null) {
             patientInfo.setStatus(1);
         }
-        
+
+        // 根据出生日期计算年龄
+        if (patientInfo.getDateOfBirth() != null) {
+            patientInfo.setAge(calculateAge(patientInfo.getDateOfBirth()));
+        }
+
         return patientInfoMapper.insert(patientInfo);
     }
 
     @Override
     public int updatePatientInfo(PatientInfo patientInfo) {
+        // 如果更新了出生日期，重新计算年龄
+        if (patientInfo.getDateOfBirth() != null) {
+            patientInfo.setAge(calculateAge(patientInfo.getDateOfBirth()));
+        }
         return patientInfoMapper.updateById(patientInfo);
+    }
+
+    /**
+     * 根据出生日期计算年龄
+     * @param dateOfBirth 出生日期
+     * @return 年龄
+     */
+    private Long calculateAge(LocalDate dateOfBirth) {
+        LocalDate currentDate = LocalDate.now();
+        long age = currentDate.getYear() - dateOfBirth.getYear();
+
+        // 如果今年的生日还没到，年龄减1
+        if (currentDate.getMonthValue() < dateOfBirth.getMonthValue() ||
+                (currentDate.getMonthValue() == dateOfBirth.getMonthValue() &&
+                        currentDate.getDayOfMonth() < dateOfBirth.getDayOfMonth())) {
+            age--;
+        }
+
+        return age;
     }
 
     @Override

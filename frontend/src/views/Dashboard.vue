@@ -17,7 +17,7 @@
           <el-icon><View /></el-icon>
         </div>
         <div class="grid-title">眼部检查</div>
-        <div class="grid-desc">眼科检查项目管理</div>
+        <div class="grid-desc">耳鼻咽喉科检查项目管理</div>
       </div>
       
       <div class="grid-item active" @click="handleNavigate('/help')">

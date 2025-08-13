@@ -5,6 +5,7 @@ import com.eyeexam.entity.ExamRecordItem;
 import com.eyeexam.mapper.ExamRecordMapper;
 import com.eyeexam.mapper.ExamRecordItemMapper;
 import com.eyeexam.service.IExamRecordService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,9 +142,59 @@ public class ExamRecordServiceImpl implements IExamRecordService {
     
     @Override
     public String generateReportNo() {
-        // 生成报告编号：RP + 年月日 + 6位序号
-        String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String timestamp = String.valueOf(System.currentTimeMillis()).substring(8);
-        return "RP" + dateStr + timestamp;
+        // 生成报告编号：RP-yyMMdd-001
+        String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+        String prefix = "RP-" + dateStr;
+        
+        // 查询当天已有的最大编号
+        QueryWrapper<ExamRecord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.likeRight("record_no", prefix)
+                   .orderByDesc("record_no")
+                   .last("LIMIT 1");
+        
+        ExamRecord lastRecord = examRecordMapper.selectOne(queryWrapper);
+        
+        int sequence = 1;
+        if (lastRecord != null && lastRecord.getRecordNo() != null) {
+            String lastCode = lastRecord.getRecordNo();
+            if (lastCode.length() >= prefix.length() + 3) {
+                try {
+                    sequence = Integer.parseInt(lastCode.substring(prefix.length())) + 1;
+                } catch (NumberFormatException e) {
+                    sequence = 1;
+                }
+            }
+        }
+        
+        return prefix + "-" + String.format("%03d", sequence);
+    }
+    
+    @Override
+    public String generateExamRecordNo(String recordType) {
+        // 生成检查记录编号：ER-yyMMdd-001
+        String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+        String prefix = "ER-" +recordType + "-" + dateStr;
+        
+        // 查询当天已有的最大编号
+        QueryWrapper<ExamRecord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.likeRight("record_no", prefix)
+                   .orderByDesc("record_no")
+                   .last("LIMIT 1");
+        
+        ExamRecord lastRecord = examRecordMapper.selectOne(queryWrapper);
+        
+        int sequence = 1;
+        if (lastRecord != null && lastRecord.getRecordNo() != null) {
+            String lastCode = lastRecord.getRecordNo();
+            if (lastCode.length() >= prefix.length() + 3) {
+                try {
+                    sequence = Integer.parseInt(lastCode.substring(prefix.length() + 1)) + 1;
+                } catch (NumberFormatException e) {
+                    sequence = 1;
+                }
+            }
+        }
+        
+        return prefix + "-" + String.format("%03d", sequence);
     }
 } 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 眼科检查系统状态查看脚本
+# 耳鼻咽喉科检查系统状态查看脚本
 # 作者: AI Assistant
 # 日期: 2024-01-15
 
@@ -124,7 +124,7 @@ show_access_info() {
 
 # 主程序
 main() {
-    print_message "=== 眼科检查系统状态 ==="
+    print_message "=== 耳鼻咽喉科检查系统状态 ==="
     echo
     
     print_info "=== 服务状态 ==="

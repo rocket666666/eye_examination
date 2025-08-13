@@ -73,4 +73,9 @@ public interface IExamRecordService {
      * 生成报告编号
      */
     String generateReportNo();
+    
+    /**
+     * 生成检查记录编号
+     */
+    String generateExamRecordNo(String recordType);
 } 

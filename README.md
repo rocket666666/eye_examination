@@ -1,6 +1,6 @@
-# 眼科检查系统 (Eye Examination System)
+# 耳鼻咽喉科检查系统 (Eye Examination System)
 
-一个基于Vue3 + Spring Boot的前后端分离眼科检查管理系统，支持用户管理、角色权限、患者管理、检查记录等功能。
+一个基于Vue3 + Spring Boot的前后端分离耳鼻咽喉科检查管理系统，支持用户管理、角色权限、患者管理、检查记录等功能。
 
 ## 🏗️ 技术架构
 
@@ -94,7 +94,7 @@ git init
 git add .
 
 # 3. 创建初始提交
-git commit -m "Initial commit: 眼科检查系统"
+git commit -m "Initial commit: 耳鼻咽喉科检查系统"
 
 # 4. 添加远程仓库地址（替换为您的 GitHub 仓库地址）
 git remote add origin https://github.com/rocket666666/eye_examination.git
@@ -461,7 +461,7 @@ tail -f logs/start.log
 - ✅ 按钮权限控制
 - ✅ 数据权限控制
 
-### 眼科检查管理
+### 耳鼻咽喉科检查管理
 - ✅ 患者信息管理
 - ✅ 检查项目配置
 - ✅ 检查记录管理

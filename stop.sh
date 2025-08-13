@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 眼科检查系统停止脚本
+# 耳鼻咽喉科检查系统停止脚本
 # 作者: AI Assistant
 # 日期: 2024-01-15
 
@@ -65,7 +65,7 @@ stop_service() {
 
 # 主程序
 main() {
-    print_message "=== 正在停止眼科检查系统 ==="
+    print_message "=== 正在停止耳鼻咽喉科检查系统 ==="
     
     # 停止前端服务
     stop_service "frontend"

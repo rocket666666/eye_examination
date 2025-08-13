@@ -56,7 +56,7 @@
             </div>
             <div class="info-item">
               <span class="label">正常范围:</span>
-              <span class="value">±2°以内</span>
+              <span class="value">±3°以内</span>
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@
             </div>
             <div class="info-item">
               <span class="label">正常范围:</span>
-              <span class="value">±2°以内</span>
+              <span class="value">±3°以内</span>
             </div>
           </div>
         </div>

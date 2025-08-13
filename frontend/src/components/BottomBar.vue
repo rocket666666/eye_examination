@@ -2,7 +2,7 @@
   <div class="bottom-bar">
     <div class="bottom-content">
       <div class="copyright">
-        <span>&copy; 2024 眼科检查系统 - 版本 1.0.0</span>
+        <span>&copy; 2024 耳鼻咽喉科检查系统 - 版本 1.0.0</span>
       </div>
       <div class="system-info">
         <span>当前时间：{{ currentTime }}</span>

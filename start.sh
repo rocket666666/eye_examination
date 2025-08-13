@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 眼科检查系统启动脚本
+# 耳鼻咽喉科检查系统启动脚本
 # 作者: AI Assistant
 # 日期: 2024-01-15
 
@@ -165,7 +165,7 @@ mkdir -p logs
 
 # 主程序
 main() {
-    print_message "=== 眼科检查系统启动 ==="
+    print_message "=== 耳鼻咽喉科检查系统启动 ==="
     
     # 环境检查
     print_info "正在检查系统环境..."

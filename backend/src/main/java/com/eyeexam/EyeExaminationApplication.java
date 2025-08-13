@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.ComponentScan;
 
 /**
- * 眼科检查系统主应用类
+ * 耳鼻咽喉科检查系统主应用类
  */
 @SpringBootApplication
 @ComponentScan(basePackages = "com.eyeexam")

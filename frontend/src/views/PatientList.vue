@@ -225,16 +225,11 @@
         <!-- 检查结果列表 -->
         <el-card>
           <el-table :data="examResults" stripe>
-            <el-table-column prop="examItem.itemName" label="检查项目" width="150">
-              <template #default="scope">
-                {{ scope.row.examItem?.itemName || '未知项目' }}
-              </template>
-            </el-table-column>
             <el-table-column prop="itemResult" label="检查结果" />
-            <el-table-column prop="isNormal" label="是否正常" width="100">
+            <el-table-column prop="status" label="是否正常" width="100">
               <template #default="scope">
-                <el-tag :type="scope.row.isNormal === 0 ? 'success' : 'danger'">
-                  {{ scope.row.isNormal === 0 ? '正常' : '异常' }}
+                <el-tag :type="scope.row.status === 2 ? 'success' : 'danger'">
+                  {{ scope.row.status === 2 ? '正常' : '异常' }}
                 </el-tag>
               </template>
             </el-table-column>

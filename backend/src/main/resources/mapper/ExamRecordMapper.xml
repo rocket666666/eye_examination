@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="ExamRecord" id="ExamRecordResult">
         <result property="recordId" column="record_id"/>
         <result property="recordNo" column="record_no"/>
+        <result property="recordType" column="record_type"/>
         <result property="patientId" column="patient_id"/>
         <result property="doctorId" column="doctor_id"/>
         <result property="examDate" column="exam_date"/>
@@ -22,13 +23,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectExamRecordVo">
-        select record_id, record_no, patient_id, doctor_id, exam_date, exam_time, status, total_amount, del_flag, create_by, create_time, update_by, update_time, remark from exam_record
+        select record_id, record_no, record_type, patient_id, doctor_id, exam_date, exam_time, status, total_amount, del_flag, create_by, create_time, update_by, update_time, remark from exam_record
     </sql>
 
     <select id="selectExamRecordList" parameterType="ExamRecord" resultMap="ExamRecordResult">
         <include refid="selectExamRecordVo"/>
         <where>  
             <if test="recordNo != null  and recordNo != ''"> and record_no like concat('%', #{recordNo}, '%')</if>
+            <if test="recordType != null  and recordType != ''"> and record_type = #{recordType}</if>
             <if test="patientId != null "> and patient_id = #{patientId}</if>
             <if test="doctorId != null "> and doctor_id = #{doctorId}</if>
             <if test="examDate != null "> and exam_date = #{examDate}</if>

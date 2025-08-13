@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# 眼科检查系统一键部署脚本
+# 耳鼻咽喉科检查系统一键部署脚本
 # Eye Examination System Deployment Script
 
 echo "=========================================="
-echo "眼科检查系统 Docker 部署脚本"
+echo "耳鼻咽喉科检查系统 Docker 部署脚本"
 echo "Eye Examination System Docker Deployment"
 echo "=========================================="
 
@@ -211,4 +211,4 @@ trap 'echo -e "${RED}部署过程中发生错误，正在清理...${NC}"; docker
 # 执行主函数
 main
 
-echo -e "${GREEN}🎉 眼科检查系统部署完成！${NC}" 
+echo -e "${GREEN}🎉 耳鼻咽喉科检查系统部署完成！${NC}" 

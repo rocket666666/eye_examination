@@ -116,7 +116,7 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   
   // 设置页面标题
-  document.title = `${to.meta.title} - 眼科检查系统`
+  document.title = `${to.meta.title} - 耳鼻咽喉科检查系统`
   
   // 检查是否需要认证
   if (to.meta.requireAuth && !authStore.isAuthenticated) {

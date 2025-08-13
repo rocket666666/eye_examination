@@ -1,5 +1,5 @@
 -- ========================================
--- 眼科检查系统数据库初始化脚本
+-- 耳鼻咽喉科检查系统数据库初始化脚本
 -- 数据库: eye_examination
 -- 版本: 1.0
 -- 创建时间: 2024-01-01
@@ -212,7 +212,7 @@ CREATE TABLE sys_logininfor (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统访问记录';
 
 -- ========================================
--- 眼科检查业务相关表
+-- 耳鼻咽喉科检查业务相关表
 -- ========================================
 
 -- 患者信息表
@@ -318,15 +318,15 @@ CREATE TABLE exam_record_item (
 -- ========================================
 
 -- 初始化部门数据
-INSERT INTO sys_dept VALUES(100, 0, '0', '眼科医院', 'EYE_HOSPITAL', 0, '院长', '15888888888', 'admin@eye.com', 1, 0, 'admin', NOW(), '', NULL);
+INSERT INTO sys_dept VALUES(100, 0, '0', '耳鼻咽喉科医院', 'EYE_HOSPITAL', 0, '院长', '15888888888', 'admin@eye.com', 1, 0, 'admin', NOW(), '', NULL);
 INSERT INTO sys_dept VALUES(101, 100, '0,100', '医疗部', 'MEDICAL_DEPT', 1, '医疗主任', '15888888888', 'medical@eye.com', 1, 0, 'admin', NOW(), '', NULL);
 INSERT INTO sys_dept VALUES(102, 100, '0,100', '行政部', 'ADMIN_DEPT', 2, '行政主任', '15888888888', 'admin@eye.com', 1, 0, 'admin', NOW(), '', NULL);
-INSERT INTO sys_dept VALUES(103, 101, '0,100,101', '眼科门诊', 'EYE_CLINIC', 1, '门诊主任', '15888888888', 'clinic@eye.com', 1, 0, 'admin', NOW(), '', NULL);
+INSERT INTO sys_dept VALUES(103, 101, '0,100,101', '耳鼻咽喉科门诊', 'EYE_CLINIC', 1, '门诊主任', '15888888888', 'clinic@eye.com', 1, 0, 'admin', NOW(), '', NULL);
 INSERT INTO sys_dept VALUES(104, 101, '0,100,101', '检查科', 'EXAM_DEPT', 2, '检查主任', '15888888888', 'exam@eye.com', 1, 0, 'admin', NOW(), '', NULL);
 
 -- 初始化用户数据（密码都是123456的BCrypt加密）
 INSERT INTO sys_user VALUES(1, 'admin', '$2a$10$7JB720yubVSKvNFLXuEhfu2lNPdvgJDqgp7MzNzUxfHpKcH9fUWGm', '系统管理员', '管理员', 'admin@eye.com', '15888888888', '', 1, '1990-01-01', 1, 0, 100, '', NULL, NOW(), 'admin', NOW(), '', NULL, '系统管理员账号');
-INSERT INTO sys_user VALUES(2, 'doctor', '$2a$10$7JB720yubVSKvNFLXuEhfu2lNPdvgJDqgp7MzNzUxfHpKcH9fUWGm', '医生', '张医生', 'doctor@eye.com', '15666666666', '', 1, '1985-05-15', 1, 0, 103, '', NULL, NOW(), 'admin', NOW(), '', NULL, '眼科医生');
+INSERT INTO sys_user VALUES(2, 'doctor', '$2a$10$7JB720yubVSKvNFLXuEhfu2lNPdvgJDqgp7MzNzUxfHpKcH9fUWGm', '医生', '张医生', 'doctor@eye.com', '15666666666', '', 1, '1985-05-15', 1, 0, 103, '', NULL, NOW(), 'admin', NOW(), '', NULL, '耳鼻咽喉科医生');
 INSERT INTO sys_user VALUES(3, 'nurse', '$2a$10$7JB720yubVSKvNFLXuEhfu2lNPdvgJDqgp7MzNzUxfHpKcH9fUWGm', '护士', '李护士', 'nurse@eye.com', '15777777777', '', 2, '1992-08-20', 1, 0, 103, '', NULL, NOW(), 'admin', NOW(), '', NULL, '护士');
 INSERT INTO sys_user VALUES(4, 'technician', '$2a$10$7JB720yubVSKvNFLXuEhfu2lNPdvgJDqgp7MzNzUxfHpKcH9fUWGm', '技师', '王技师', 'tech@eye.com', '15555555555', '', 1, '1988-03-10', 1, 0, 104, '', NULL, NOW(), 'admin', NOW(), '', NULL, '检查技师');
 
@@ -348,8 +348,8 @@ INSERT INTO sys_menu VALUES(8, '日志管理', 1, 7, 'log', '', '', 1, 0, 'M', 1
 INSERT INTO sys_menu VALUES(9, '操作日志', 8, 1, 'operlog', 'system/operlog/index', '', 1, 0, 'C', 1, 1, 'system:operlog:list', 'form', 'admin', NOW(), '', NULL, '操作日志菜单');
 INSERT INTO sys_menu VALUES(10, '登录日志', 8, 2, 'logininfor', 'system/logininfor/index', '', 1, 0, 'C', 1, 1, 'system:logininfor:list', 'logininfor', 'admin', NOW(), '', NULL, '登录日志菜单');
 
--- 眼科检查管理菜单
-INSERT INTO sys_menu VALUES(100, '眼科检查', 0, 2, 'exam', NULL, '', 1, 0, 'M', 1, 1, '', 'eye', 'admin', NOW(), '', NULL, '眼科检查管理');
+-- 耳鼻咽喉科检查管理菜单
+INSERT INTO sys_menu VALUES(100, '耳鼻咽喉科检查', 0, 2, 'exam', NULL, '', 1, 0, 'M', 1, 1, '', 'eye', 'admin', NOW(), '', NULL, '耳鼻咽喉科检查管理');
 INSERT INTO sys_menu VALUES(101, '患者管理', 100, 1, 'patient', 'exam/patient/index', '', 1, 0, 'C', 1, 1, 'exam:patient:list', 'user', 'admin', NOW(), '', NULL, '患者管理菜单');
 INSERT INTO sys_menu VALUES(102, '检查项目', 100, 2, 'item', 'exam/item/index', '', 1, 0, 'C', 1, 1, 'exam:item:list', 'list', 'admin', NOW(), '', NULL, '检查项目菜单');
 INSERT INTO sys_menu VALUES(103, '检查记录', 100, 3, 'record', 'exam/record/index', '', 1, 0, 'C', 1, 1, 'exam:record:list', 'documentation', 'admin', NOW(), '', NULL, '检查记录菜单');

@@ -91,7 +91,7 @@
               <el-timeline-item timestamp="2024-01-15 08:20" placement="top">
                 <el-card>
                   <h4>检查完成</h4>
-                  <p>患者 张三 完成眼科检查</p>
+                  <p>患者 张三 完成耳鼻咽喉科检查</p>
                 </el-card>
               </el-timeline-item>
             </el-timeline>

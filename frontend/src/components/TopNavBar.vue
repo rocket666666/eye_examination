@@ -4,7 +4,7 @@
     <div class="system-bar">
       <div class="system-content">
         <div class="system-left">
-          <span class="system-title">眼科检查系统</span>
+          <span class="system-title">耳鼻咽喉科检查系统</span>
         </div>
         <div class="system-right">
           <span class="user-welcome">欢迎，{{ authStore.user?.nickName || authStore.user?.username }}</span>

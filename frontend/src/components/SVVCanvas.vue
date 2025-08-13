@@ -718,6 +718,7 @@ const saveExamResult = async () => {
       examDate: new Date().toISOString().split('T')[0],
       examTime: new Date().toTimeString().split(' ')[0],
       status: 3, // 已完成
+      recordType: 'SVV',
       totalAmount: 0,
       remark: `SVV检查 - 平均X轴: ${avgHorizontal.toFixed(1)}°, 平均Y轴: ${avgVertical.toFixed(1)}°`
     }
@@ -730,6 +731,8 @@ const saveExamResult = async () => {
         horizontal: result.horizontal,
         vertical: result.vertical
       }),
+      horizontal: result.horizontal,
+      vertical: result.vertical,
       isNormal: (Math.abs(result.horizontal) <= 2 && Math.abs(result.vertical) <= 2) ? 1 : 0,
       status: 2, // 已完成
       examTime: new Date().toISOString()
